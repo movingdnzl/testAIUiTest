@@ -1,0 +1,14 @@
+# XcodeGen 生成物
+UITestDemo.xcodeproj/
+
+# 构建 & 测试结果
+build/
+DerivedData/
+*.xcresult
+
+# macOS
+.DS_Store
+
+# Xcode 用户数据
+xcuserdata/
+*.xcuserstate

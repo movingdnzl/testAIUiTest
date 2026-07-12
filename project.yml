@@ -1,0 +1,52 @@
+name: UITestDemo
+options:
+  bundleIdPrefix: com.fanqinghu.uitestdemo
+  deploymentTarget:
+    iOS: "16.0"
+  createIntermediateGroups: true
+
+settings:
+  base:
+    MARKETING_VERSION: "1.0"
+    CURRENT_PROJECT_VERSION: "1"
+    SWIFT_VERSION: "5.0"
+    GENERATE_INFOPLIST_FILE: YES
+    CODE_SIGNING_ALLOWED: NO
+
+targets:
+  UITestDemo:
+    type: application
+    platform: iOS
+    sources:
+      - path: App
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.fanqinghu.uitestdemo
+        INFOPLIST_KEY_UILaunchScreen_Generation: YES
+        INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES
+        TARGETED_DEVICE_FAMILY: "1,2"
+
+  UITestDemoUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources:
+      - path: UITests
+    dependencies:
+      - target: UITestDemo
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.fanqinghu.uitestdemo.uitests
+        TEST_TARGET_NAME: UITestDemo
+
+schemes:
+  UITestDemo:
+    build:
+      targets:
+        UITestDemo: all
+        UITestDemoUITests: [test]
+    test:
+      targets:
+        - UITestDemoUITests
+      gatherCoverageData: false
+    run:
+      config: Debug
