@@ -20,9 +20,9 @@ demo:
 open:
 	open build/report.html
 
-# 打开自动操作录屏视频
+# 打开每个页面的自动操作录屏视频（按 Tab 分别录制）
 video:
-	open build/demo.mp4
+	open build/videos
 
 # 用 Xcode 打开 xcresult 查看每步截图
 result:

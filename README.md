@@ -57,10 +57,10 @@ testAIUiTest/
 ## 一键运行
 
 ```bash
-make test          # 启动模拟器 → 录屏 → 跑 UI 测试 → 生成报告+视频
+make test          # 启动模拟器 → 按 Tab 分别录屏 → 跑 UI 测试 → 生成报告+每页视频
 make demo          # 同上，但放慢节奏（每步暂停 0.6s），肉眼更好看清操作
-make open          # 浏览器打开 HTML 报告
-make video         # 打开自动操作录屏 build/demo.mp4
+make open          # 浏览器打开 HTML 报告（报告内每个页面卡片内嵌本页录屏）
+make video         # 打开每页录屏目录 build/videos/（1-Login.mp4 / 2-Counter.mp4 ...）
 make result        # 用 Xcode 打开 xcresult（含每个用例逐步截图）
 ```
 
@@ -75,10 +75,10 @@ UITEST_SLOWMO=1.0 make test        # 每步暂停 1 秒
 ## 报告输出
 
 跑完后在 `build/` 目录：
-- `report.html` — 图形化报告（按页面分组、通过率、失败原因+提示）
-- `report.md` — Markdown 报告
-- `demo.mp4` — **自动操作全过程录屏**，直观展示机器人操作 App
-- `TestResults.xcresult` — Xcode 原生结果包，含每个用例的**逐步截图和失败录屏**
+- `report.html` — 图形化报告（按页面分组、通过率、失败原因+提示，**每个页面卡片内嵌本页录屏**）
+- `report.md` — Markdown 报告（每页附本页录屏链接）
+- `videos/` — **按 Tab 分别录制**的操作视频：`1-Login.mp4`、`2-Counter.mp4`、`3-Todo.mp4`、`4-Form.mp4`、`5-Settings.mp4`，看哪个功能的自动操作就点哪段
+- `TestResults.xcresult` — Xcode 原生结果包（各页面结果已合并），含每个用例的**逐步截图和失败录屏**
 
 ## “模拟真人操作”是怎么实现的
 
@@ -87,7 +87,7 @@ XCUITest 通过系统 Accessibility 框架驱动界面，`tap()` / `typeText()` 
 
 三种「看得见」的方式：
 1. **实时观看**：`make test` 时模拟器自动弹出，肉眼可见自动操作
-2. **录屏视频**：跑完得到 `build/demo.mp4`，整段自动操作过程，可分享
+2. **分页录屏**：跑完在 `build/videos/` 得到每个页面各自一段视频（如 `1-Login.mp4`），只含该页面的自动操作，定位更精准、可单独分享
 3. **逐步截图**：每个用例自动截图并附进 xcresult，`make result` 逐步回放；失败也带最终界面
 
 ## 真机运行（可选）

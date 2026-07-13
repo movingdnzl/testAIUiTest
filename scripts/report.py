@@ -19,6 +19,16 @@ PAGES = [
     ("Settings", "设置页"),
 ]
 
+# ---- 每个页面对应的独立操作录屏（相对 report.html 的路径）----
+# 与 run-tests.sh 的 PLAN 序号/命名保持一致：build/videos/<序号>-<页面>.mp4
+PAGE_VIDEO = {
+    "Login":    ("videos/1-Login.mp4", "登录页"),
+    "Counter":  ("videos/2-Counter.mp4", "计数器页"),
+    "Todo":     ("videos/3-Todo.mp4", "待办页"),
+    "Form":     ("videos/4-Form.mp4", "表单页"),
+    "Settings": ("videos/5-Settings.mp4", "设置页"),
+}
+
 # ---- 测试方法名 -> (页面key, 功能中文描述) ----
 # 方法名在整个工程内唯一，直接按方法名映射。
 FEATURE_MAP = {
@@ -202,9 +212,12 @@ def main():
           f"- 生成时间：{now}",
           f"- 总体结果：**{overall}**",
           f"- 通过 {passed} / 共 {total}（通过率 {rate}）  失败 {failed}  跳过 {skipped}\n"]
-    for _, g in groups:
+    for pkey, g in groups:
         gp = sum(1 for i in g["items"] if i["result"] == "Passed")
         md.append(f"## {g['cn']}  （{gp}/{len(g['items'])} 通过）\n")
+        vid = PAGE_VIDEO.get(pkey)
+        if vid:
+            md.append(f"- 🎬 本页操作录屏：[{vid[0]}]({vid[0]})")
         for i in g["items"]:
             mark = {"Passed": "✅ 通过", "Failed": "❌ 失败", "Skipped": "⏭️ 跳过"}.get(i["result"], i["result"])
             md.append(f"- {mark} — {i['desc']}")
@@ -223,11 +236,20 @@ def main():
     banner_icon = "✅" if overall_ok else "⚠️"
 
     sections = ""
-    for _, g in groups:
+    for pkey, g in groups:
         items = g["items"]
         gp = sum(1 for i in items if i["result"] == "Passed")
         gf = sum(1 for i in items if i["result"] == "Failed")
         head_color = "#c62828" if gf else "#2e7d32"
+        vid = PAGE_VIDEO.get(pkey)
+        video_block = ""
+        if vid:
+            vpath = vid[0]
+            video_block = (
+                f"<div class='video'>"
+                f"<video controls preload='metadata' src='{esc(vpath)}'></video>"
+                f"<a class='vlink' href='{esc(vpath)}'>▶ 本页操作录屏（{esc(vid[1])}）</a>"
+                f"</div>")
         rows = ""
         for i in items:
             r = i["result"]
@@ -262,6 +284,7 @@ def main():
             <span class="page">{g['cn']}</span>
             <span class="count" style="color:{head_color}">{gp}/{len(items)} 通过{'' if not gf else f' · {gf} 失败'}</span>
           </div>
+          {video_block}
           <table>
             <thead><tr><th style="width:90px">结果</th><th>测试的功能</th><th style="width:200px">用例</th></tr></thead>
             <tbody>{rows}</tbody>
@@ -300,6 +323,9 @@ tr:last-child td{{border-bottom:none}}
 .reason{{padding-top:0;padding-bottom:12px}}
 .hint{{background:#fff3e0;border-left:3px solid #fb8c00;padding:8px 12px;border-radius:6px;font-size:13px;color:#5d4037;margin-bottom:6px}}
 .fmsg{{background:#fdecea;border-left:3px solid #e53935;padding:8px 12px;border-radius:6px;font-size:12px;color:#7a2a25;font-family:ui-monospace,Menlo,monospace;white-space:pre-wrap;word-break:break-word;margin-bottom:6px}}
+.video{{padding:14px 18px 4px;border-bottom:1px solid #f0f0f2}}
+.video video{{width:100%;max-width:320px;border-radius:10px;background:#000;display:block}}
+.video .vlink{{display:inline-block;margin-top:8px;font-size:13px;color:#1565c0;text-decoration:none}}
 .legend{{font-size:13px;color:#8a8a8e;margin-top:18px}}
 </style></head><body>
 <div class="wrap">
