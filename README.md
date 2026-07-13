@@ -57,26 +57,56 @@ testAIUiTest/
 ## 一键运行
 
 ```bash
-make test          # 生成工程 → 跑 UI 自动化测试 → 生成报告
+make test          # 启动模拟器 → 录屏 → 跑 UI 测试 → 生成报告+视频
+make demo          # 同上，但放慢节奏（每步暂停 0.6s），肉眼更好看清操作
 make open          # 浏览器打开 HTML 报告
-make result        # 用 Xcode 打开 xcresult（含每步截图/录屏）
+make video         # 打开自动操作录屏 build/demo.mp4
+make result        # 用 Xcode 打开 xcresult（含每个用例逐步截图）
 ```
 
-指定模拟器机型：
+指定模拟器机型 / 关闭录屏 / 自定义放慢秒数：
 
 ```bash
 SIMULATOR="iPhone 15" make test
+RECORD=0 make test                 # 不录屏
+UITEST_SLOWMO=1.0 make test        # 每步暂停 1 秒
 ```
 
 ## 报告输出
 
 跑完后在 `build/` 目录：
-- `report.html` — 图形化报告（总体结果、通过率、用例明细表）
+- `report.html` — 图形化报告（按页面分组、通过率、失败原因+提示）
 - `report.md` — Markdown 报告
-- `TestResults.xcresult` — Xcode 原生结果包，双击可看每个用例的**逐步截图和失败录屏**
+- `demo.mp4` — **自动操作全过程录屏**，直观展示机器人操作 App
+- `TestResults.xcresult` — Xcode 原生结果包，含每个用例的**逐步截图和失败录屏**
 
-## “看到自动化测试效果”的方式
+## “模拟真人操作”是怎么实现的
 
-- 跑 `make test` 时，**iOS 模拟器会自动打开**，可以肉眼看到脚本自动点击、输入、切页面
-- 跑完用 `make result` 打开 xcresult，逐用例回放每一步的 UI 截图
-- 用 `make open` 看汇总报告
+XCUITest 通过系统 Accessibility 框架驱动界面，`tap()` / `typeText()` / `swipeLeft()`
+会在**真实运行的模拟器/真机**上产生真实的点击、键入、滑动事件——就是机器人替人操作 App。
+
+三种「看得见」的方式：
+1. **实时观看**：`make test` 时模拟器自动弹出，肉眼可见自动操作
+2. **录屏视频**：跑完得到 `build/demo.mp4`，整段自动操作过程，可分享
+3. **逐步截图**：每个用例自动截图并附进 xcresult，`make result` 逐步回放；失败也带最终界面
+
+## 真机运行（可选）
+
+操作代码与模拟器完全一致，只需换 destination 并配置签名：
+
+1. 真机连电脑并在设备上「信任此电脑」
+2. 拿到设备 UDID：`xcrun xctrace list devices`
+3. 在 `project.yml` 的 target settings 里加签名：
+   ```yaml
+   DEVELOPMENT_TEAM: <你的 Apple Team ID>
+   CODE_SIGNING_ALLOWED: YES
+   CODE_SIGN_STYLE: Automatic
+   ```
+4. 运行时指定真机：
+   ```bash
+   xcodegen generate
+   xcodebuild test -project UITestDemo.xcodeproj -scheme UITestDemo \
+     -destination 'platform=iOS,id=<设备UDID>' \
+     -resultBundlePath build/TestResults.xcresult
+   ```
+> 真机录屏用 Xcode 或 QuickTime；simctl 的 recordVideo 仅支持模拟器。

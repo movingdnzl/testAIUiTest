@@ -12,3 +12,6 @@ DerivedData/
 # Xcode 用户数据
 xcuserdata/
 *.xcuserstate
+
+# Python
+__pycache__/

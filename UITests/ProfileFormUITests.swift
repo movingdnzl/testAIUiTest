@@ -21,9 +21,9 @@ final class ProfileFormUITests: UITestBase {
         app.buttons["form_save_button"].tap()
 
         let summary = app.staticTexts["form_summary_label"]
-        XCTAssertTrue(summary.waitForExistence(timeout: 3))
-        XCTAssertTrue(summary.label.contains("Alice"))
-        XCTAssertTrue(summary.label.contains("alice@example.com"))
+        XCTAssertTrue(summary.waitForExistence(timeout: 3), "保存后未出现摘要")
+        XCTAssertTrue(summary.label.contains("Alice"), "摘要里缺少填写的姓名 Alice")
+        XCTAssertTrue(summary.label.contains("alice@example.com"), "摘要里缺少填写的邮箱")
     }
 
     /// 关闭通知开关并保存，摘要显示 notif off。
@@ -32,8 +32,8 @@ final class ProfileFormUITests: UITestBase {
         app.buttons["form_save_button"].tap()
 
         let summary = app.staticTexts["form_summary_label"]
-        XCTAssertTrue(summary.waitForExistence(timeout: 3))
-        XCTAssertTrue(summary.label.contains("notif off"))
+        XCTAssertTrue(summary.waitForExistence(timeout: 3), "保存后未出现摘要")
+        XCTAssertTrue(summary.label.contains("notif off"), "关闭通知后摘要未显示 notif off")
     }
 
     /// 拖动年龄滑块后保存，摘要包含年龄字段。
@@ -42,7 +42,7 @@ final class ProfileFormUITests: UITestBase {
         app.buttons["form_save_button"].tap()
 
         let summary = app.staticTexts["form_summary_label"]
-        XCTAssertTrue(summary.waitForExistence(timeout: 3))
-        XCTAssertTrue(summary.label.contains("age"))
+        XCTAssertTrue(summary.waitForExistence(timeout: 3), "保存后未出现摘要")
+        XCTAssertTrue(summary.label.contains("age"), "拖动滑块保存后摘要未包含年龄字段")
     }
 }
